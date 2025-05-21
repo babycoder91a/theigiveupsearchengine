@@ -23,7 +23,6 @@ const DictionarySearch = () => {
     try {
       const response = await fetch(url);
       const result = await response.json();
-      console.log(result);
 
       if (result && result.word && result.definitions && result.definitions.length > 0) {
         setData(result);
@@ -43,7 +42,15 @@ const DictionarySearch = () => {
     <div className="app">
       <div className="bubbles">
         {[...Array(20)].map((_, i) => (
-          <span key={i} className="bubble" style={{ left: `${Math.random() * 100}%`, animationDuration: `${5 + Math.random() * 5}s`, animationDelay: `${Math.random() * 5}s` }} />
+          <span
+            key={i}
+            className="bubble"
+            style={{
+              left: `${Math.random() * 100}%`,
+              animationDuration: `${5 + Math.random() * 5}s`,
+              animationDelay: `${Math.random() * 5}s`
+            }}
+          />
         ))}
       </div>
       <h1>🌈 Dictionary Search</h1>

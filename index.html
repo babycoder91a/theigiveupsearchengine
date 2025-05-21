@@ -2,44 +2,154 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>🌈 Dictionary App</title>
-
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600&display=swap" rel="stylesheet" />
-
-  <!-- Favicon -->
-  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/3658/3658752.png" type="image/png" />
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Bubble Dictionary App</title>
   <style>
     body {
       margin: 0;
-      font-family: 'Quicksand', sans-serif;
-      background: linear-gradient(270deg, #ff6ec4, #7873f5, #4ade80, #fcd34d, #f87171);
-      background-size: 1000% 1000%;
-      animation: rainbowBG 30s ease infinite;
-      height: 100vh;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #4f9dfc, #a64ac9);
+      color: #fff;
       display: flex;
-      align-items: center;
       justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
     }
 
-    #root {
-      width: 100%;
-      max-width: 1024px;
-      margin: auto;
+    .container {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 30px;
+      padding: 3rem;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      backdrop-filter: blur(10px);
+      text-align: center;
+      z-index: 2;
     }
 
-    @keyframes rainbowBG {
-      0% { background-position: 0% 50%; }
-      50% { background-position: 100% 50%; }
-      100% { background-position: 0% 50%; }
+    h1 {
+      margin-bottom: 2rem;
+    }
+
+    input {
+      padding: 0.7rem 1rem;
+      border-radius: 30px;
+      border: none;
+      font-size: 1rem;
+      outline: none;
+      margin-right: 0.5rem;
+      width: 60%;
+    }
+
+    button {
+      padding: 0.7rem 1.2rem;
+      border: none;
+      border-radius: 30px;
+      background-color: #7e57c2;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #9575cd;
+    }
+
+    .definition {
+      margin-top: 2rem;
+      text-align: left;
+    }
+
+    .definition h2 {
+      margin-bottom: 1rem;
+    }
+
+    .definition ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .definition li {
+      background: rgba(255, 255, 255, 0.15);
+      padding: 1rem;
+      margin: 1rem 0;
+      border-radius: 20px;
+      backdrop-filter: blur(5px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Optional animated background bubbles */
+    body::before {
+      content: '';
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 10% 10%, rgba(255, 255, 255, 0.1) 20%, transparent 70%) repeat;
+      animation: moveBubbles 30s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes moveBubbles {
+      0% {
+        transform: translate(0, 0);
+      }
+      100% {
+        transform: translate(-25%, -25%);
+      }
     }
   </style>
 </head>
 <body>
-  <div id="root">
-    <noscript>You need to enable JavaScript to run this app.</noscript>
+  <div class="container">
+    <h1>📘 Bubble Dictionary</h1>
+    <form id="search-form">
+      <input type="text" id="search-input" placeholder="Search a word..." />
+      <button type="submit">Search</button>
+    </form>
+    <div id="output" class="definition"></div>
   </div>
+
+  <script>
+    const form = document.getElementById("search-form");
+    const input = document.getElementById("search-input");
+    const output = document.getElementById("output");
+    const API_KEY = "16f7c477d4dao63td086a628b0b233a9";
+
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const word = input.value.trim();
+      if (!word) return;
+
+      output.innerHTML = "<p>Loading...</p>";
+
+      try {
+        const response = await fetch(
+          `https://api.shecodes.io/dictionary/v1/define?word=${word}&key=${API_KEY}`
+        );
+
+        if (!response.ok) throw new Error("Word not found.");
+
+        const data = await response.json();
+
+        let html = `<h2>${data.word}</h2><ul>`;
+        if (data.meanings && data.meanings.length > 0) {
+          data.meanings.forEach((meaning) => {
+            html += `<li><strong>${meaning.partOfSpeech}:</strong> ${meaning.definition}</li>`;
+          });
+        } else {
+          html += `<li>No definitions found.</li>`;
+        }
+        html += `</ul>`;
+        output.innerHTML = html;
+      } catch (error) {
+        output.innerHTML = `<p>${error.message}</p>`;
+      }
+    });
+  </script>
 </body>
 </html>
+
